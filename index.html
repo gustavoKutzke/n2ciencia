@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Analisador de Aderência</title>
+  <style>
+    :root{
+      --bg:#f7f7f8;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --brand:#0073b1;
+      --brand-600:#005a87;
+      --ok:#10b981;
+      --warn:#f59e0b;
+      --err:#ef4444;
+      --border:#e5e7eb;
+      --chip:#eef6fb;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#0b1220;
+        --card:#0f172a;
+        --text:#e5e7eb;
+        --muted:#9ca3af;
+        --brand:#50b4ff;
+        --brand-600:#2a8dd6;
+        --ok:#34d399;
+        --warn:#fbbf24;
+        --err:#f87171;
+        --border:#1f2937;
+        --chip:#0b2433;
+      }
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:var(--bg); color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      line-height:1.5;
+    }
+    header{
+      max-width:1100px; margin:24px auto 0; padding:0 16px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .logo{font-weight:800; letter-spacing:.3px}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px; border:1px solid var(--border); border-radius:999px; font-size:.9rem;
+      background:var(--card);
+    }
+    main{
+      max-width:1100px; margin:16px auto; padding:16px;
+      display:grid; gap:16px;
+      grid-template-columns:1fr;
+    }
+    @media (min-width:900px){
+      main{ grid-template-columns: 1.2fr .8fr; }
+    }
+    .card{
+      background:var(--card); border:1px solid var(--border);
+      border-radius:14px; padding:18px 18px;
+      box-shadow:0 10px 24px rgba(0,0,0,.04);
+    }
+    h1{font-size:clamp(1.2rem,2.4vw,1.6rem); margin:0 0 10px}
+    .sub{color:var(--muted); margin:0 0 12px; font-size:.98rem}
+    label{font-weight:600; display:block; margin-bottom:6px}
+    textarea{
+      width:100%; min-height:200px; padding:12px 14px; resize:vertical;
+      border-radius:10px; border:1px solid var(--border); background:transparent; color:var(--text);
+      font-size:1rem;
+    }
+    .row{display:flex; gap:10px; align-items:center; justify-content:space-between}
+    .muted{color:var(--muted); font-size:.9rem}
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      padding:12px 16px; border-radius:10px; border:1px solid transparent; cursor:pointer;
+      background:var(--brand); color:white; font-weight:700; width:100%;
+      transition:transform .05s ease, background .2s ease;
+    }
+    .btn:hover{ background:var(--brand-600); }
+    .btn:active{ transform:translateY(1px); }
+    .btn.secondary{
+      background:transparent; color:var(--brand); border-color:var(--brand);
+    }
+    .chips{display:flex; flex-wrap:wrap; gap:8px}
+    .chip{
+      background:var(--chip); color:var(--brand); border:1px solid var(--border);
+      padding:6px 10px; border-radius:999px; font-weight:600; cursor:pointer;
+      font-size:.9rem;
+    }
+    .results h2{margin:0 0 10px}
+    .list{display:grid; gap:10px; list-style:none; padding:0; margin:0}
+    .item{
+      border:1px solid var(--border); border-radius:12px; padding:16px; background:transparent;
+    }
+    .item .title{display:flex; gap:10px; align-items:center; justify-content:space-between}
+    .badge{
+      display:inline-flex; align-items:center; justify-content:center;
+      min-width:54px; padding:4px 10px; border-radius:999px; font-weight:800;
+      background:var(--chip); color:var(--brand); border:1px dashed var(--border);
+    }
+    .item p{margin:8px 0 12px; color:var(--muted); font-style:italic}
+    .item a{color:var(--brand); text-decoration:none; font-weight:700}
+    .empty, .loading, .error{ text-align:center; padding:16px; border:1px dashed var(--border); border-radius:10px; }
+    .error{ color:var(--err); border-color:var(--err); }
+    .loading{ color:var(--muted); }
+    .debug{ margin-top:12px; padding:12px; font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+            white-space:pre-wrap; background:var(--chip); border-radius:10px; border:1px solid var(--border); }
+    .split{display:grid; gap:10px; grid-template-columns:1fr;}
+    @media (min-width:520px){ .split{ grid-template-columns:1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Analisador de Aderência</div>
+    <div class="pill" title="Auto dark mode · CORS pronto · LocalStorage">
+      ⚙️ Front simples · Flask API
+    </div>
+  </header>
+
+  <main>
+    
+    <section class="card">
+      <h1>Descreva a vaga</h1>
+      <p class="sub">Cole o texto completo (responsabilidades, requisitos, formação, tempo de experiência, palavras-chave etc.).</p>
+
+      <label for="desc">Descrição</label>
+      <textarea id="desc" placeholder="Ex.: Desenvolvedor(a) Full Stack, 3 anos de experiência, superior completo. Requer: Python, React, SQL, Docker, Git. Desejável: Scrum, AWS."></textarea>
+
+      <div class="row" style="margin-top:8px">
+        <span class="muted"><span id="count">0</span> caracteres</span>
+        <label class="muted" style="display:flex; gap:8px; align-items:center; cursor:pointer;">
+          <input id="debugToggle" type="checkbox" /> debug
+        </label>
+      </div>
+
+      <div class="split" style="margin-top:12px;">
+        <button id="submit" class="btn">🔎 Buscar perfis recomendados</button>
+        <button id="clear" class="btn secondary" type="button">🧹 Limpar</button>
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="muted" style="margin-bottom:8px">Exemplos rápidos</div>
+        <div class="chips">
+          <button class="chip" data-example="Dev Full Stack, 3 anos, superior completo. Requer: Python, React, SQL, Docker, Git. Desejável: Scrum, AWS.">Full Stack (Py + React)</button>
+          <button class="chip" data-example="Desenvolvedor(a) Back-end, 4 anos, graduação completa. Requer: Java, SQL, Docker, Git.">Back-end Java</button>
+          <button class="chip" data-example="Suporte técnico, 1 ano, ensino médio. Requer: Suporte, SQL básico.">Suporte</button>
+        </div>
+      </div>
+    </section>
+
+    
+    <aside class="card">
+      <h2 style="margin:0 0 10px">Como funciona</h2>
+      <ol class="sub" style="padding-left:18px; margin:0 0 14px">
+        <li>Você descreve a vaga (texto livre).</li>
+        <li>O front envia <code>{ description }</code> por POST para <code>/analyze_text</code>.</li>
+        <li>O Flask extrai skills, experiência e escolaridade, compara com o dataset e devolve top 5.</li>
+      </ol>
+      <div class="muted" style="margin-bottom:10px">Dicas de texto que o parser entende bem:</div>
+      <ul class="sub" style="padding-left:18px; margin:0">
+        <li>“<b>3 anos</b>”, “<b>1 ano</b>”, “<b>4 anos</b>”</li>
+        <li>Formação: “<b>ensino médio</b>”, “<b>superior completo</b>”, “<b>pós-graduação</b>”</li>
+        <li>Skills mapeadas: <i>full stack, sql, suporte, python, java, react, angular, javascript, c#, aws, docker, git, scrum</i></li>
+      </ul>
+    </aside>
+
+    
+    <section class="card results" style="grid-column: 1 / -1;">
+      <h2>Resultados</h2>
+      <div id="results" class="empty">Preencha a descrição e clique em “Buscar perfis recomendados”.</div>
+      <div id="debugBox" class="debug" style="display:none"></div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (sel)=>document.querySelector(sel);
+    const resultsEl = $("#results");
+    const debugBox = $("#debugBox");
+    const descEl = $("#desc");
+    const countEl = $("#count");
+    const debugToggle = $("#debugToggle");
+
+    
+    const KEY = "aderencia:descricao";
+    const saved = localStorage.getItem(KEY);
+    if(saved){ descEl.value = saved; countEl.textContent = descEl.value.length; }
+    descEl.addEventListener("input", ()=>{ countEl.textContent = descEl.value.length; localStorage.setItem(KEY, descEl.value); });
+
+   
+    document.querySelectorAll(".chip").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        descEl.value = btn.dataset.example;
+        countEl.textContent = descEl.value.length;
+        localStorage.setItem(KEY, descEl.value);
+      });
+    });
+
+    
+    $("#clear").addEventListener("click", ()=>{
+      descEl.value = "";
+      countEl.textContent = 0;
+      localStorage.removeItem(KEY);
+      resultsEl.className = "empty";
+      resultsEl.innerHTML = "Preencha a descrição e clique em “Buscar perfis recomendados”.";
+      debugBox.style.display = "none";
+      debugBox.textContent = "";
+    });
+
+   
+    $("#submit").addEventListener("click", async ()=>{
+      const description = descEl.value.trim();
+      if(!description){
+        resultsEl.className = "error";
+        resultsEl.innerHTML = "❌ <b>Erro:</b> descreva a vaga antes de enviar.";
+        return;
+      }
+      const url = "http://127.0.0.1:5000/analyze_text" + (debugToggle.checked ? "?debug=1" : "");
+      resultsEl.className = "loading";
+      resultsEl.textContent = "Processando…";
+
+      debugBox.style.display = "none";
+      debugBox.textContent = "";
+
+      try{
+        const r = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ description })
+        });
+
+        const data = await r.json().catch(()=> ({}));
+
+        if(!r.ok){
+          const msg = data?.error || r.statusText || "Falha ao consultar a API.";
+          resultsEl.className = "error";
+          resultsEl.innerHTML = `❌ <b>Erro:</b> ${msg}`;
+          return;
+        }
+
+        
+        if(debugToggle.checked && data.parsed_requirements){
+          debugBox.style.display = "block";
+          debugBox.textContent = "Requisitos interpretados pelo servidor:\n" + JSON.stringify(data.parsed_requirements, null, 2);
+        }
+
+        const list = debugToggle.checked && data.top5 ? data.top5 : data;
+
+        if(!Array.isArray(list) || list.length === 0){
+          resultsEl.className = "empty";
+          resultsEl.innerHTML = "Nenhum perfil compatível encontrado.";
+          return;
+        }
+
+        resultsEl.className = "";
+        const ul = document.createElement("ul");
+        ul.className = "list";
+
+        list.forEach((p, i)=>{
+          const li = document.createElement("li");
+          li.className = "item";
+          li.innerHTML = `
+            <div class="title">
+              <div><strong>${i+1}. ${p.name ?? "Sem nome"}</strong></div>
+              <span class="badge">Score ${p.score ?? 0}</span>
+            </div>
+            <p>${p.justification ?? "Sem justificativa."}</p>
+            <a href="${p.url ?? "#"}" target="_blank" rel="noopener noreferrer">Ver Perfil</a>
+          `;
+          ul.appendChild(li);
+        });
+
+        resultsEl.innerHTML = "";
+        resultsEl.appendChild(ul);
+
+      }catch(err){
+        resultsEl.className = "error";
+        resultsEl.innerHTML = "❌ <b>Erro:</b> Não foi possível conectar ao servidor Flask. Ele está rodando?";
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

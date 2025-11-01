@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Leonardo Reitz",
+    "url": "https://www.linkedin.com/in/leonardo-reitz-723487244/",
+    "education_level": "Superior Incompleto",
+    "skills": ["Full Stack", "Desenvolvedor", "SCRUM"],
+    "experience_years": 2
+  },
+  {
+    "id": 2,
+    "name": "Eduardo da Silva",
+    "url": "https://www.linkedin.com/in/eduardo-da-silva-03a929219/",
+    "education_level": "Superior Incompleto",
+    "skills": ["SQL", "Suporte", "Desenvolvedor", "SCRUM"],
+    "experience_years": 3
+  },
+  {
+    "id": 3,
+    "name": "Lucas Bortoloti",
+    "url": "https://www.linkedin.com/in/lucas-bortoloti/",
+    "education_level": "Superior Incompleto",
+    "skills": ["PHP", "HTML", "CSS", "SQL", "Adianti", "Suporte", "Desenvolvedor"],
+    "experience_years": 1
+  },
+  {
+    "id": 4,
+    "name": "Gustavo Kutzke",
+    "url": "https://www.linkedin.com/in/gustavo-kutzke-55ba77238/",
+    "education_level": "Superior Incompleto",
+    "skills": ["Desenvolvedor", "Android"],
+    "experience_years": 1
+  },
+  {
+    "id": 5,
+    "name": "Martim Dietterle",
+    "url": "https://www.linkedin.com/in/martim-dietterle/",
+    "education_level": "Mestrado",
+    "skills": ["Desenvolvedor", "Professor","Web", "Linux", "IA", "SQL", "API", "Git", "SCRUM"],
+    "experience_years": 18
+  }
+]
